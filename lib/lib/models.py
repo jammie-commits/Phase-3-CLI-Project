@@ -42,7 +42,7 @@ class Property:
     self.agent_id = agent_id
 
   @classmethod
-  def create_property(cls, conn, address, price, sold, commission_rate, agent_id):
+  def create_property(cls, conn, address, price, commission_rate, sold, agent_id):
     """Creates a new property in the database."""
     cursor = conn.cursor()
     cursor.execute("INSERT INTO properties (address, price, commission_rate, sold, agent_id) VALUES (?, ?, ?, ?, ?)", 
