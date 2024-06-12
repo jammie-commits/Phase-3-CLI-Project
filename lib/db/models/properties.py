@@ -1,38 +1,100 @@
+
+from connection import conn, cursor
+
+
 class Property:
-  def __init__(self, id, address, price, commission_rate, sold, agent_id):
-    self.id = id
-    self.address = address
-    self.price = price
-    self.commission_rate = commission_rate
-    self.sold = sold
-    self.agent_id = agent_id
 
-  @classmethod
-  def create_property(cls, conn, address, price, commission_rate, sold, agent_id):
-    """Creates a new property in the database."""
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO properties (address, price, commission_rate, sold, agent_id) VALUES (?, ?, ?, ?, ?)", 
-                  (address, price, commission_rate, sold, agent_id))
-    conn.commit()
-    return cls(cursor.lastrowid, address, price, commission_rate, sold, agent_id)
+    def __init__(
+        self, name, id=None, address=None, price=None, sold=None, agent_id=None
+    ):
+        self.id = id
+        self.name = name
+        self.price = price
+        self.address = address
+        self.sold = sold
+        self.agent_id = agent_id
 
-  @classmethod
-  def get_all_properties(cls, conn):
-    """Fetches all properties from the database."""
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM properties")
-    return [cls(*row) for row in cursor.fetchall()]
+    def __repr__(self):
+        return f"<Property {self.id} {self.name} {self.price} {self.address} {self.sold} {self.agent_id}>"
 
-  @classmethod
-  def get_property_by_id(cls, conn, property_id):
-    """Fetches a property by its ID."""
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM properties WHERE id = ?", (property_id,))
-    return cls(*cursor.fetchone()) if cursor.fetchone() else None
+    @classmethod
+    def create_table(cls):
+        sql = """
+            CREATE TABLE properties (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            price TEXT NOT NULL,
+            address TEXT NOT NULL,
+            sold INTEGER NOT NULL,
+            agent_id INTEGER NOT NULL,
+            )
+        """
 
-  @classmethod
-  def delete_property(cls, conn, property_id):
-    """Deletes a property from the database."""
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM properties WHERE id = ?", (property_id,))
-    conn.commit()
+        cursor.execute(sql)
+        conn.commit()
+
+    @classmethod
+    def drop_table(cls):
+        sql = """
+            DROP TABLE IF EXISTS properties;
+        """
+
+        cursor.execute(sql)
+        conn.commit()
+
+    def save(self):
+        sql = """
+            INSERT INTO properties (
+            name, price, address, sold, agent_id
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+        """
+
+        cursor.execute(
+            sql,
+            (
+                self.name,
+                self.price,
+                self.address,
+                self.sold,
+                self.agent_id,
+            ),
+        )
+        conn.commit()
+        self.id = cursor.lastrowid
+
+    @classmethod
+    def create(cls, name, price, address, sold, agent_id):
+        Property = cls(name, price, address, sold, agent_id)
+
+        Property.save()
+
+        return Property
+
+    def update(self):
+        sql = """
+            UPDATE properties SET name = ?, phone = ?, email = ?
+            WHERE id = ?
+        """
+
+        cursor.execute(
+            sql,
+            (
+                self.name,
+                self.address,
+                self.price,
+                self.sold,
+                self.agent_id,
+                self.id,
+            ),
+        )
+
+        conn.commit()
+
+    def delete(self):
+        sql = """
+            DELETE FROM properties
+            WHERE id = ?
+        """
+
+        cursor.execute(sql, (self.id,))
+        conn.commit()

@@ -1,3 +1,5 @@
+from connection import conn, cursor
+
 class Client:
   def __init__(self, id, name, email, phone, property):
     self.id = id
