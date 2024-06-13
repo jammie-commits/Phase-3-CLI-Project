@@ -38,6 +38,7 @@ View clients: pipenv run python lib/cli.py viewclients
 
 ## Purpose
 This tool simplifies real estate management tasks by providing a streamlined interface to handle agent details, property listings, client registrations, and data retrieval, all within a SQLite database environment. It is suitable for real estate agencies or professionals looking for a straightforward solution to manage their operations digitally.
-##Technologies used
+
+## Technologies used
 -Python
 -Sql-lite
