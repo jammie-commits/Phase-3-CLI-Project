@@ -1,5 +1,5 @@
 
-from connection import conn, cursor
+from lib.models.connection import conn, cursor
 
 
 class Agent:
@@ -13,17 +13,24 @@ class Agent:
         self.email = email
 
     def __repr__(self):
-        return f"<Student {self.id} {self.name} {self.phone} {self.email}>"
+        return f"<Agent {self.id} {self.name} {self.phone} {self.email}>"
+    
+    
+@classmethod
+def drop_table(cls):
+        sql = """
+            DROP TABLE IF EXISTS agents;
+        """
 
-    @classmethod
-    def create_table(cls):
+        cursor.execute(sql)
+        conn.commit()
+@classmethod
+def create_table(cls):
         sql = """
             CREATE TABLE agents (
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL,
-          
             phone TEXT NOT NULL,
-            
             email TEXT
             )
         """
@@ -31,16 +38,8 @@ class Agent:
         cursor.execute(sql)
         conn.commit()
 
-    @classmethod
-    def drop_table(cls):
-        sql = """
-            DROP TABLE IF EXISTS agents;
-        """
 
-        cursor.execute(sql)
-        conn.commit()
-
-    def save(self):
+def save(self):
         sql = """
             INSERT INTO agents (
             name, phone, email
@@ -60,15 +59,15 @@ class Agent:
         conn.commit()
         self.id = cursor.lastrowid
 
-    @classmethod
-    def create(cls, name, phone, email):
+@classmethod
+def create(cls, name, phone, email):
         agent = cls(name, phone, email)
 
         agent.save()
 
         return agent
 
-    def update(self):
+def update(self):
         sql = """
             UPDATE agents SET name = ?, phone = ?, email = ?
             WHERE id = ?
@@ -88,7 +87,7 @@ class Agent:
 
         conn.commit()
 
-    def delete(self):
+def delete(self):
         sql = """
             DELETE FROM agents
             WHERE id = ?

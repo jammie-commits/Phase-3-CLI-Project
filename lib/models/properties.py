@@ -1,5 +1,5 @@
 
-from connection import conn, cursor
+from connection import conn, cursor 
 
 
 class Property:
